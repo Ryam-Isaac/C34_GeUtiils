@@ -1,0 +1,48 @@
+public class GeoUtils {
+    public static double prodVectPts(Point p1, Point p2, Point p3) {
+        return ((p2.getX() - p1.getX())*(p3.getY() - p1.getY()) - (p2.getY() - p1.getY())*(p3.getX()-p1.getX()));
+    }
+
+    public static boolean estSurSegment(Segment s, Point pt) {
+        if (prodVectPts(s.getP1(), s.getP2(), pt) != 0) {
+            return false;
+        } else {
+            return Math.min(s.getP1().getX(), s.getP2().getX()) <= pt.getX() &&
+                    pt.getX() <= Math.max(s.getP1().getX(), s.getP2().getX()) &&
+                    Math.min(s.getP1().getY(), s.getP2().getY()) <= pt.getY() &&
+                    pt.getY() <= Math.max(s.getP1().getY(), s.getP2().getY());
+        }
+    }
+
+
+    public static int orientation(Double value) {
+        if (Double.compare(value, 0) == 0) {
+            return 0;
+        } else if (value < 0) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
+
+    public static boolean segmentCross(Segment s1, Segment s2) {
+        int orientation11 = GeoUtils.orientation(GeoUtils.prodVectPts(s1.getP1(), s1.getP2(), s2.getP1()));
+        int orientation12 = GeoUtils.orientation(GeoUtils.prodVectPts(s1.getP1(), s1.getP2(), s2.getP2()));
+        int orientation21 = GeoUtils.orientation(GeoUtils.prodVectPts(s2.getP1(), s2.getP2(), s1.getP1()));
+        int orientation22 = GeoUtils.orientation(GeoUtils.prodVectPts(s2.getP1(), s2.getP2(), s1.getP2()));
+
+        boolean colin11 = orientation11 == 0;
+        boolean colin12 = orientation12 == 0;
+        boolean colin21 = orientation21 == 0;
+        boolean colin22 = orientation22 == 0;
+
+        if (orientation11 != orientation12 && orientation21 != orientation22) {
+            if (!colin11 && !colin12 && !colin21 && !colin22) {
+                return true;
+            } else if (estSurSegment(s1, s2.getP1()) || estSurSegment(s1, s2.getP2())) {
+                return true;
+            } else return estSurSegment(s2, s1.getP1()) || estSurSegment(s2, s1.getP2());
+        }
+        return false;
+    }
+}
